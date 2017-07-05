@@ -13,7 +13,7 @@ Lots of room for improvement here - feel free to fork and pull if you have sugge
 ## Requirements
 * **Outlook client** (not web access) installed and configured with a default email profile (see [Outlook Email Setup](https://support.office.com/en-us/article/Outlook-email-setup-6e27792a-9267-4aa4-8bb6-c84ef146101b)
 * Outlook client running (and logged in) at time script is run
-* Default email profile set to "Cached Mode" with the amount of mail stored offline set to the amount of mail you wish to process with this script:
+* Default email profile set to "Cached Mode" with the amount of mail stored offline set to the amount of mail you wish to process with this script (Control Panel -> Mail):
 
 ![Outlook client cache (offline) setting](https://whois.nsabol.net/assets/img/outlook-cached-exchange-mode-date-range.png)
 
