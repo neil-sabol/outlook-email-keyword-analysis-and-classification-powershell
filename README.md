@@ -15,7 +15,7 @@ Lots of room for improvement here - feel free to fork and pull if you have sugge
 * Outlook client running (and logged in) at time script is run
 * Default email profile set to "Cached Mode" with the amount of mail stored offline set to the amount of mail you wish to process with this script (Control Panel -> Mail):
 
-![Outlook client cache (offline) setting](https://www.binaryinnards.com/images/outlook-cached-exchange-mode-date-range.png)
+![Outlook client cache (offline) setting](https://blog.neilsabol.site/images/outlook-cached-exchange-mode-date-range.png)
 
 * PowerShell V2 or higher
 * PowerShell execution policy that permits this script to run
@@ -82,8 +82,8 @@ $keywordList =  ("Bakery Website","bob's baked goods","bob's bakery","bakery web
 ```
 In this example, 2 projects will be analyzed (relative to each other). Keywords associated with each are defined accordingly. The script is extensible so key words can include descriptive text, names of those associated with a project, etc.
 
-### Using properties
-May apply if you manage or own properties (real estate)
+### Using properties (real estate)
+May apply if you manage or own properties
 ```
 $keywordList =  ("Sycamore Property","2897 sycamore st","sycamore plaza","98123135135"),
                 ("Elm Property","elm","elm center","elm apartment"),
