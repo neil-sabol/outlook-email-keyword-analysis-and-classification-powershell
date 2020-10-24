@@ -1,7 +1,8 @@
-# PowerShell script to analyze sent email messages over specific time periods in Outlook, produce a breakdown of keywords
-# you define, and display the results in an easy to read format. Sort of like a word cloud, but you define the search and
-# matching criteria. Quick way to get a baseline of what topics you email about most frequently and how the email messages
-# you send for each key word group (label) relate to one another.
+# This is a PowerShell script that provides a quick, systematic way to get a baseline of what you email about most often.
+# It also analyzes how email messages you send (containing specific keywords) are related to one another. It allows you
+# to analyze sent email messages over time intervals in Outlook, produce a breakdown of user-defined keywords, and
+# display the results in an easy to read format. The idea is similar to a word cloud or tag cloud, but you define the
+# search and matching criteria (key words or tags).
 # Neil Sabol (neil.sabol@gmail.com)
 #
 # Based on and inspired by Ed Wilson's (Microsoft Scripting Guy) work:
@@ -11,15 +12,15 @@
 # BEGIN CONFIGURATION - ADD YOUR KEYWORD LIST (GROUPS) HERE
 ################################################################################################################
 
-# Define projects, tasks, customers, accounts, people, etc. and the keywords associated with them - the script uses this
-# array to classify your sent messages (based on keyword match). See example below and create your $keywordList array
-# accordingly. Add as many lines as needed. The first element is the LABEL this script will display for the keyword group
-# (in the results) - it IS NOT included when searching your messages. All elements (keywords) following the LABEL are
-# searched in your messages. There is no limit to the number of keywords you can add for each group.
+# Define projects, tasks, topics, customers, accounts, people, etc. and the keywords associated with them - the script
+# uses this array to classify your sent messages (based on keyword match). See the example below and create your
+# $keywordList array accordingly. Add as many lines as needed. Keep in mind the first element of each line is the
+# LABEL for that group of keywords (and IS NOT included when matching but appears in the "Breakdown by Keyword (relative)"
+# section of the script's output). The keywords themselves must be listed after the label (first element) - these ARE
+# matched against the content of your sent items.
 #
-#    $keywordList =  ("Group 1","keyword1","keyword2","keyword3"),
-#                    ("Group 2","anotherkeyword1","another keyword2"),
-#                    ("Group 3","yet another keyword1","yetanotherkeyword2")
+#         $keywordList =  ("Label 1","keyword 1.1","keyword 1.2","keyword 1.3"),
+#                         ("Label 2","keyword 2.1")
 #
 
 $keywordList =  ("Sycamore Property","2897 sycamore st","sycamore plaza","98123135135"),
@@ -31,17 +32,7 @@ $keywordList =  ("Sycamore Property","2897 sycamore st","sycamore plaza","981231
 # END CONFIGURATION
 ################################################################################################################
 
-write-host "  ___        _   _             _      _____                 _ _ "
-write-host " / _ \ _   _| |_| | ___   ___ | | __ | ____|_ __ ___   __ _(_| |"
-write-host "| | | | | | | __| |/ _ \ / _ \| |/ / |  _| | '_ ` _ \ / _` | | |"
-write-host "| |_| | |_| | |_| | (_) | (_) |   <  | |___| | | | | | (_| | | |"
-write-host " \___/ \__,_|\__|_|\___/ \___/|_|\_\ |_____|_| |_| |_|\__,_|_|_|"
-write-host "   / \   _ __   __ _| |_   _ _______ _ __                       "
-write-host "  / _ \ | '_ \ / _` | | | | |_  / _ | '__|                      "
-write-host " / ___ \| | | | (_| | | |_| |/ |  __| |                         "
-write-host "/_/   \_|_| |_|\__,_|_|\__, /___\___|_|     "
-
-# Ensure Outlook is running - really, Outlook must be configured, running, and user logged in
+# Ensure Outlook is running - technically, Outlook must also be configured and a user logged in
 $outlookProcess = Get-Process outlook -ErrorAction SilentlyContinue
 if (!$outlookProcess) {
     write-host " "
@@ -77,8 +68,9 @@ while ($continueRun -eq "y") {
     $totalMatches = 0
     $totalKeywords = 0
 
-    # Initialize the count array - add a counter (starting at 0) for each keyword group provided in configuration
-    # Assume that keys in this array line up with keys in keyword array since the latter cannot change during execution
+    # Initialize the count array - add a counter (starting at 0) for each keyword group provided in the configuration
+    # Assume that keys in this array line up with keys in the keyword array since the latter cannot change during
+    # execution
     $keywordCount = @()
     ForEach ($group in $keywordList) {
         $keywordCount+=0
@@ -89,12 +81,12 @@ while ($continueRun -eq "y") {
     $startDate=Read-Host -Prompt "Enter START Date (mm/dd/yy)"
     $endDate=Read-Host -Prompt "Enter END Date (mm/dd/yy)"
 
-    # Inform user of potential delay in parsing data (generally this is quick, but just in case)
+    # Inform the user of a potential delay in parsing data (generally this is quick, but just in case)
     write-host " "
     write-host "Please wait, analyzing data for specified dates..."
 
-    # Process sent items, counting frequency of keywords
-    # Pull messages objects out of the "cache" created above, based on date range entered by user
+    # Process sent items, counting the frequency of keywords
+    # Pull messages objects out of the "cache" created above, based on the date range entered by the user
     $sentItemsCache | where-object { $_.ReceivedTime -ge $startDate } | where-object { $_.ReceivedTime -le $endDate } | ForEach-Object {
         $totalEmailsParsed++
         $emailSubject = $_.Subject
@@ -131,7 +123,7 @@ while ($continueRun -eq "y") {
         $totalKeywords = $totalKeywords + $currentCount
     }
 
-    # If any messages were parsed, estimate % of emails matched - number of emails matched divided by the total
+    # If any messages were parsed, estimate % of emails matched: the number of emails matched divided by the total
     # emails parsed
     if ($totalEmailsParsed -ne 0) {
          $percentMatches = [math]::Round(100 *($totalMatches/$totalEmailsParsed))
@@ -140,7 +132,7 @@ while ($continueRun -eq "y") {
         write-host " "
         write-host "Breakdown by Keyword (relative)"
         write-host "-------------------------------"
-        # Loop through the keywords array and keyword match count array, calculate the %, and if greater than 0, print
+        # Loop through the keywords array and keyword match count array, calculate the %, and if greater than 0,
         # print the result
         For ($i=0; $i -lt $keywordList.Length; $i++) {
             $currentKeyword = $keywordList[$i][0]
@@ -167,11 +159,11 @@ while ($continueRun -eq "y") {
         write-host " "
     }
     
-    # Provide opportunity for additional date range analysis
+    # Provide an opportunity for additional date range analysis
     $continueRun=Read-Host -Prompt "Analysis complete. Would you like to enter another date range (y/n)?"
 }
 
-# Friendly reminder to copy/paste analysis results before script window closes
+# Display a friendly reminder to copy/paste analysis results before the script window closes
 write-host " "
 write-host " "
 write-host "Script complete - be sure to copy/paste the analysis above (as needed)"
